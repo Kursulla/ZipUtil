@@ -88,5 +88,47 @@ public class ZipUtil {
         }
         return new File(outputFilePath);
     }
+public static File unZip(String pathToZip, String pathToOutputDir) {
+        byte[] buffer = new byte[1024];
+        File outputDirectory = null;
+        try {
 
+            outputDirectory = new File(pathToOutputDir);
+            if (!outputDirectory.exists()) {
+                outputDirectory.mkdir();
+            }
+
+            ZipInputStream zis = new ZipInputStream(new FileInputStream(pathToZip));
+            ZipEntry ze = zis.getNextEntry();
+
+            while (ze != null) {
+                String fileName = ze.getName();
+                File newFile = new File(pathToOutputDir + File.separator + fileName);
+
+                System.out.println("file unzip : " + newFile.getAbsoluteFile());
+
+                new File(newFile.getParent()).mkdirs();
+
+                FileOutputStream fos = new FileOutputStream(newFile);
+
+                int len;
+                while ((len = zis.read(buffer)) > 0) {
+                    fos.write(buffer, 0, len);
+                }
+
+                fos.close();
+                ze = zis.getNextEntry();
+            }
+
+            zis.closeEntry();
+            zis.close();
+
+            System.out.println("Done");
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return outputDirectory;
+    }
+    
 }
